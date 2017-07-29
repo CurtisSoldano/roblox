@@ -1,0 +1,16 @@
+local replicatedstorage =  game:GetService("ReplicatedStorage")
+local status = replaictedstorage:WaitForChild(StatuusValue)
+
+while true do
+-- intermission
+for i = 30,0,-1 do
+status.Value = "Intermission: "..i
+wait(1)
+status.Value = "Game in Progress"
+end
+local map = game.ServerStorage.Basemap
+map:Clone().Parent = game.Workspace
+wait(15)
+game.Workspace.BaseMap:Destroy()
+status.Value = "Game Over!"
+end
