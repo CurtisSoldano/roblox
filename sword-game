@@ -1,0 +1,16 @@
+local replicatedstorage = game:GetService('ReplicateStorage')
+local status = replicatedstorage:WaitForChild('InfoValue')
+
+while true do
+
+while game.Players,NumPlayers > 2 do
+  status.Value = "There needs to be more than 2 players in the game to begin"
+  repeast wait(2) until game.Players.NumPlayers >= 2
+end
+
+for i = 15, 0, -1 do
+  status.Value = 'Intermission '..i
+  wait(1)
+end
+wait(2)
+end
