@@ -1,0 +1,175 @@
+-- define variables
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local ServerStorage = game:GetService("ServerStorage")
+
+local MapsFolder = ServerStorage:WaitForChild("Maps")
+
+local Status = ReplicatedStorage:WaitForChild("Status")
+
+local GameLength = 10
+
+local reward = 25		
+
+-- Main Game Loop
+
+
+while true do
+	-- initial game start - set message to "waiting for players"
+	Status.Value = "Waiting for more players"
+	print("waiting for players")
+	-- repeat with a 1 second delay until there there is more than 1 player
+	repeat wait(1) until game.Players.NumPlayers >= 2
+	
+	--count down intermission time(i)
+	print("intermission")
+	for i = 10,0,-1 do
+		Status.Value = "intermission "..i
+		wait(1)
+	end
+	
+	Status.Value = "Get Ready to Rumble!!"
+	
+	--loop through player list and add to table 
+	
+	local plrs = {}
+	
+	for i, player in pairs (game.Players:GetPlayers()) do
+		if player then
+			table.insert(plrs,player) -- add each player into players table
+			print(player)
+		end
+	end
+	
+	wait(1)
+
+	--check the maps directory for available maps and assign list to a vaiable "AvailableMaps"
+	local AvailableMaps = MapsFolder:GetChildren()
+	-- choose a random map from the available list
+	local ChosenMap = AvailableMaps[math.random(1,#AvailableMaps)]
+	
+	Status.Value = ChosenMap.Name.." Chosen"
+	-- clone it into the workspace
+	local ClonedMap = ChosenMap:Clone()
+	ClonedMap.Parent = workspace
+	
+	-- create SpawnPoints variable and populate it with a with the "SpawnPoints" model
+	
+	local SpawnPoints = ClonedMap:FindFirstChild("SpawnPoints")
+	
+	if not SpawnPoints then
+		print("SpawnPoints not found")
+	end
+	
+	--create AvailableSpawnPoints variable and populate it with a list of all children in the model "SpawnPoints"
+	local AvailableSpawnPoints = SpawnPoints:GetChildren()
+	-- loop through the "plrs" table as many times as there are players in the table(#plrs)
+	for i,player in pairs(plrs) do
+		if player then
+			character = player.Character
+			-- set variable "character" as the current player
+			if character then
+			-- teleport "characters" root part to the first spawn point onthe list
+			  character:FindFirstChild("HumanoidRootPart").CFrame = AvailableSpawnPoints[1].CFrame
+			table.remove(AvailableSpawnPoints,1)
+			
+			-- create Sword object, clone it from storage and put in "character"'s backpack
+			local Sword = ServerStorage.Sword:Clone()
+			Sword.Parent = player.Backpack
+			-- create "GameTag" variable, name it GameTag and parent to "character" 
+			local GameTag = Instance.new("BoolValue")
+			GameTag.Name = "GameTag"
+			GameTag.Parent = player.Character
+						
+			else 
+			  -- There is no character
+			  if not player then
+				table.remove(plrs,i)
+			  end
+			  
+		    end
+		end
+	end
+	
+	print("before countdown logic")
+		
+	wait(2)
+	for i = GameLength,0,-1 do
+		
+		for x,player in pairs(plrs) do
+			if player then 
+				
+				character = player.Character
+			
+				if not character then
+					--left the game
+					
+				else
+					if character:FindFirstChild("GameTag") then
+						--they are still alive
+						print(player.Name.." is still in the game")
+					else
+						--they are dead
+						table.remove(plrs,x)
+						print(player.Name.." has been removed")
+				end
+					
+			end
+		else
+			table.remove(plrs,x)
+			print(player.Name.." has been removed!")
+		end
+		
+		Status.Value = "There are "..i.." seconds left and "..#plrs.." remaining"
+			
+	if #plrs == 1 then
+		--last person standing
+		Status.Value = "The winner is "..plrs[1].Name
+		plrs[1].leaderstats.Bucks.Value = plrs[1].leaderstats.Bucks.Value + reward
+		print("choice1")
+		wait(5)
+		break
+	elseif #plrs == 0 then
+		Status.Value = "Nobody Won"
+		print("choice2")
+		break
+	elseif i == 0 then
+		Status.Value = "Times Up!"
+		print("choice3")
+		break
+	end
+end
+end
+	
+	
+for i,players in pairs(game.Players:GetPlayers()) do
+	character = player.Character
+	
+	if not character then
+		
+	else
+		if character:FindFirstChild("GmeTag") then
+			character.GameTag:Destroy()
+		end
+		if player.Backpack:FindFirstChild("Sword") then
+			player.Backpack.Sword:Destroy()
+		end
+		if character:FindFirstChild("Sword") then
+			character.Sword:Destroy()
+		end
+		player:LoadCharacter()
+	end
+
+end
+
+	
+end
+	
+
+	
+	
+
+
+
+
